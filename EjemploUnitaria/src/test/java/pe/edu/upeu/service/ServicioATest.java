@@ -2,6 +2,13 @@ package pe.edu.upeu.service;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
+
 @DisplayName("Operaciones Basicas")
 public class ServicioATest {
     private ServicioA servicioA;
@@ -29,6 +36,40 @@ public class ServicioATest {
             Assertions.assertThat(resultado).isEqualTo(2);
         }
     }
+    @Nested
+    @DisplayName("Pruebas Parametrizadas")
+    class Parametrizadas{
+
+        @ParameterizedTest(name = "suma({0},{1})={2}")
+        @CsvSource({"4,2,6", "7,2,9", "-10,2,-8"})
+        void sumaParametrizada(int num1, int num2, int num3){
+            Assertions.assertThat(servicioA.suma(num1, num2)).isEqualTo(num3);
+        }
+
+        @ParameterizedTest(name = "{0}/{1}={2}")
+        @MethodSource("casosDePruebaDiv")
+        void divicionParametrizada(int num1, int num2, double result){
+            Assertions.assertThat(servicioA.dividir(num1, num2)).isEqualTo(result);
+        }
+
+        static Stream<Arguments> casosDePruebaDiv(){
+            return Stream.of(
+                    Arguments.of(10,2,5),
+                    Arguments.of(-10,2,-5),
+                    Arguments.of(9, 4, 2.25)
+
+            );
+        }
+    }
+
+    @Test
+    @DisplayName("Prueba Division entre cero")
+    void divisionConCero(){
+        Assertions.assertThatThrownBy(()->servicioA.dividir(6,0))
+                .isInstanceOf(ArithmeticException.class)
+                .hasMessageContaining("dividir entre cero");
+    }
+
     @AfterAll
     static void finalizar(){
         System.out.println("Pruebas Finalizadas");
