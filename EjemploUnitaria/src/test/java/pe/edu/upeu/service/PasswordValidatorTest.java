@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayName("Validar Password")
-public class PasswordValidatorTest {
+class PasswordValidatorTest {
 
     private PasswordValidator validator;
 

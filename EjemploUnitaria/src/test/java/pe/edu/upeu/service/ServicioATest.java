@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 @DisplayName("Operaciones Basicas")
-public class ServicioATest {
+ class ServicioATest {
     private ServicioA servicioA;
     @BeforeAll
     static void setup(){
