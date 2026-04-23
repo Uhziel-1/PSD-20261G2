@@ -23,6 +23,7 @@ import static org.mockito.BDDMockito.*;
 @DisplayName("Pruebas unitarias - CategoriaService")
 class CategoriaServiceTest {
 
+    static final String ID_NOT_FOUND= "ID NOT FOUND: ";
     @Mock
     private ICategoriaRepository repo;
 
@@ -42,7 +43,7 @@ class CategoriaServiceTest {
     @Order(1)
     @DisplayName("Guardar categoria - debe retornar la categoria guardada")
     @Test
-    void testSaveCategoria_RetornaCategoria() {
+    void testSaveCategoriaRetornaCategoria() {
         given(repo.save(categoria)).willReturn(categoria);
 
         Categoria resultado = categoriaService.save(categoria);
@@ -57,7 +58,7 @@ class CategoriaServiceTest {
     @DisplayName("Guardar categoria - verifica nombre con múltiples valores")
     @ParameterizedTest(name = "nombre=''{0}''")
     @ValueSource(strings = {"Ropa", "Calzado", "Alimentos", "Tecnología"})
-    void testSaveCategoria_ConDiferentesNombres(String nombre) {
+    void testSaveCategoriaConDiferentesNombres(String nombre) {
         Categoria cat =
                 Categoria.builder().idCategoria(1L).nombre(nombre).build();
         given(repo.save(cat)).willReturn(cat);
@@ -67,7 +68,7 @@ class CategoriaServiceTest {
     @Order(3)
     @DisplayName("Listar categorias - debe retornar lista completa")
     @Test
-    void testFindAllCategorias_RetornaLista() {
+    void testFindAllCategoriasRetornaLista() {
         Categoria cat2 =
                 Categoria.builder().idCategoria(2L).nombre("Ropa").build();
         given(repo.findAll()).willReturn(List.of(categoria, cat2));
@@ -80,7 +81,7 @@ class CategoriaServiceTest {
     @Order(4)
     @DisplayName("Listar categorias - lista vacía")
     @Test
-    void testFindAllCategorias_ListaVacia() {
+    void testFindAllCategoriasListaVacia() {
         given(repo.findAll()).willReturn(List.of());
         List<Categoria> resultado = categoriaService.findAll();
         Assertions.assertThat(resultado).isEmpty();
@@ -89,7 +90,7 @@ class CategoriaServiceTest {
     @DisplayName("Buscar categoria por id - debe retornar categoria existente")
     @ParameterizedTest(name = "id={0}, nombre=''{1}''")
     @CsvSource({"1, Electrónica", "2, Ropa", "3, Calzado"})
-    void testFindById_RetornaCategoria(Long id, String nombre) {
+    void testFindByIdRetornaCategoria(Long id, String nombre) {
         Categoria cat =
                 Categoria.builder().idCategoria(id).nombre(nombre).build();
         given(repo.findById(id)).willReturn(Optional.of(cat));
@@ -102,17 +103,17 @@ class CategoriaServiceTest {
     @DisplayName("Buscar categoria por id - lanza excepción cuando no existe")
     @ParameterizedTest(name = "id inexistente={0}")
     @ValueSource(longs = {99L, 100L, 999L})
-    void testFindById_LanzaExcepcionCuandoNoExiste(Long idInexistente) {
+    void testFindByIdLanzaExcepcionCuandoNoExiste(Long idInexistente) {
         given(repo.findById(idInexistente)).willReturn(Optional.empty());
         Assertions.assertThatThrownBy(() ->
                         categoriaService.findById(idInexistente))
                 .isInstanceOf(ModelNotFoundException.class)
-                .hasMessageContaining("ID NOT FOUND: " + idInexistente);
+                .hasMessageContaining(ID_NOT_FOUND + idInexistente);
     }
     @Order(7)
     @DisplayName("Actualizar categoria - debe retornar categoria actualizada")
     @Test
-    void testUpdateCategoria_RetornaCategoriaActualizada() {
+    void testUpdateCategoriaRetornaCategoriaActualizada() {
         Categoria categoriaActualizada = Categoria.builder()
                 .idCategoria(1L).nombre("Tecnología").build();
         given(repo.findById(1L)).willReturn(Optional.of(categoria));
@@ -127,19 +128,19 @@ class CategoriaServiceTest {
     @Order(8)
     @DisplayName("Actualizar categoria - lanza excepción cuando id no existe")
     @Test
-    void testUpdateCategoria_LanzaExcepcionCuandoIdNoExiste() {
+    void testUpdateCategoriaLanzaExcepcionCuandoIdNoExiste() {
         Long idInexistente = 50L;
         given(repo.findById(idInexistente)).willReturn(Optional.empty());
         Assertions.assertThatThrownBy(() ->
                         categoriaService.update(idInexistente, categoria))
                 .isInstanceOf(ModelNotFoundException.class)
-                .hasMessageContaining("ID NOT FOUND: " + idInexistente);
+                .hasMessageContaining(ID_NOT_FOUND + idInexistente);
     }
 
     @Order(9)
     @DisplayName("Eliminar categoria - debe retornar respuesta exitosa")
     @Test
-    void testDeleteCategoria_RetornaCustomResponseExitoso() {
+    void testDeleteCategoriaRetornaCustomResponseExitoso() {
         given(repo.findById(1L)).willReturn(Optional.of(categoria));
         CustomResponse respuesta = categoriaService.delete(1L);
         Assertions.assertThat(respuesta).isNotNull();
@@ -152,13 +153,13 @@ class CategoriaServiceTest {
     @DisplayName("Eliminar categoria - lanza excepción cuando id no existe")
     @ParameterizedTest(name = "id inexistente={0}")
     @ValueSource(longs = {88L, 99L})
-    void testDeleteCategoria_LanzaExcepcionCuandoIdNoExiste(Long
+    void testDeleteCategoriaLanzaExcepcionCuandoIdNoExiste(Long
                                                                     idInexistente) {
         given(repo.findById(idInexistente)).willReturn(Optional.empty());
         Assertions.assertThatThrownBy(() ->
                         categoriaService.delete(idInexistente))
                 .isInstanceOf(ModelNotFoundException.class)
-                .hasMessageContaining("ID NOT FOUND: " + idInexistente);
+                .hasMessageContaining(ID_NOT_FOUND + idInexistente);
         then(repo).should(never()).deleteById(any());
     }
 
