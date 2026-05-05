@@ -47,8 +47,8 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaMapper.toDTO(obj));
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<CustomResponse> delete(@PathVariable("id") Long id) {
         categoriaService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(CustomResponse.ok("Se ha eliminado correctamente", "/categorias/" + id));
     }
 }
